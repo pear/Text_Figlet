@@ -14,13 +14,13 @@
 // | obtain it through the world-wide-web, please send a note to          |
 // | license@php.net so we can mail you a copy immediately.               |
 // +----------------------------------------------------------------------+
-// | Authors: Evgeny Stepanischev <se@timelabs.ru>                        |
+// | Authors: Evgeny Stepanischev <se@lixil.ru>                           |
 // +----------------------------------------------------------------------+
 // Project home page (Russian): http://bolk.exler.ru/files/figlet/
 //
 // $Id$
 
-require_once "PEAR.php";
+require_once 'PEAR.php';
 
 class Text_Figlet
 {
@@ -29,9 +29,8 @@ class Text_Figlet
      *
      * @var integer
      *
-     * @access private
+     * @access protected
      */
-
     var $height;
 
     /**
@@ -39,9 +38,8 @@ class Text_Figlet
      *
      * @var integer
      *
-     * @access private
+     * @access protected
      */
-
     var $oldlayout;
 
     /**
@@ -49,9 +47,8 @@ class Text_Figlet
      *
      * @var integer
      *
-     * @access private
+     * @access protected
      */
-
     var $rtol;
 
     /**
@@ -59,9 +56,8 @@ class Text_Figlet
      *
      * @var integer
      *
-     * @access private
+     * @access protected
      */
-
     var $hardblank;
 
     /**
@@ -69,9 +65,8 @@ class Text_Figlet
      *
      * @var array
      *
-     * @access private
+     * @access protected
      */
-
     var $font;
 
     /**
@@ -79,40 +74,67 @@ class Text_Figlet
      *
      * @var integer
      *
-     * @access private
+     * @access protected
      */
-
     var $smush_flag;
+
+
 
     /**
      * Load user font. Must be invoked first.
+     * Automatically tries the Text_Figlet font data directory
+     *  as long as no path separator is in the filename.
      *
      * @param string $filename font file name
      * @param bool $loadgerman (optional) load German character set or not
      * @access public
-     * @return mixed PEAR_error or true for success
+     * @return mixed PEAR_Error or true for success
      */
-
     function loadFont($filename, $loadgerman = true)
     {
         $this->font = array();
-        if (!file_exists($filename))
-        return PEAR::raiseError('File is not found', 1);
+        if (!file_exists($filename)) {
+            //if it does not exist, try the Text_Figlet data directory
+            require_once 'PEAR/Config.php';
+            $fontdir = PEAR_Config::singleton()->get('data_dir')
+                 . '/Text_Figlet/fonts/';
+            //only for filenames without path separators
+            if (strpos($filename, '/') === false
+                && file_exists($fontdir . $filename)
+            ) {
+                $filename = $fontdir . $filename;
+            } else {
+                return PEAR::raiseError(
+                    'Figlet font file "' . $filename . '" cannot be found',
+                    1
+                );
+            }
+        }
 
         // If Gzip compressed font
         if (substr($filename, -3, 3) == '.gz') {
-            $filename = "compress.zlib://$filename";
+            $filename   = 'compress.zlib://' . $filename;
             $compressed = true;
 
             if (!function_exists('gzcompress')) {
-                return PEAR::raiseError('Unknown FIGlet font format.', 3);
+                return PEAR::raiseError(
+                    'Cannot load gzip compressed fonts since'
+                    . ' gzcompress() is not available.',
+                    3
+                );
             }
         } else {
             $compressed = false;
         }
 
-        if ($fp = fopen($filename, 'rb')) {
-            if (!$compressed) flock($fp, LOCK_SH);
+        if (!($fp = fopen($filename, 'rb'))) {
+            return PEAR::raiseError('Cannot open figlet font file ' . $filename, 2);
+        }
+
+
+        if (!$compressed) {
+            flock($fp, LOCK_SH);
+        }
 
 //            flf2a$ 6 5 20 15 3 0 143 229
 //              |  | | | |  |  | |  |   |
@@ -124,83 +146,82 @@ class Text_Figlet
 //            Max_Length      Old_Layout
 
 
-            $header = explode(' ', fgets($fp, 2048));
+        $header = explode(' ', fgets($fp, 2048));
 
-            if (substr($header[0], 0, 5) <> 'flf2a') {
-                return PEAR::raiseError('Unknown FIGlet font format.', 3);
-            }
-
-            @list ($this->hardblank, $this->height,,,
-            $this->oldlayout, $cmt_count, $this->rtol) = $header;
-
-            $this->hardblank = substr($this->hardblank, -1, 1);
-
-            for ($i = 0; $i<$cmt_count; $i++) {
-                fgets($fp, 2048);
-            }
-
-            // ASCII charcters
-            for ($i = 32; $i<127; $i++) {
-                $this->font[$i] = $this->_char($fp);
-            }
-
-            foreach (array(91, 92, 93, 123, 124, 125, 126) as $i) {
-                if ($loadgerman) {
-                    $letter = $this->_char($fp);
-
-                    // Invalid character but main font is loaded and I can use it
-                    if ($letter === false) {
-                        fclose($fp);
-                        return true;
-                    }
-
-                    // Load if it is not blank only
-                    if (trim(implode('', $letter)) <> '')
-                    $this->font[$i] = $letter;
-                } else {
-                    $this->_skip($fp);
-                }
-            }
-
-            // Extented characters
-            for ($n = 0; !feof($fp); $n++) {
-                list ($i) = explode(' ', rtrim(fgets($fp, 1024)), 2);
-                if ($i == '') {
-                    continue;
-                }
-
-                // If comment
-                if (preg_match('/^\-0x/i', $i)) {
-                    $this->_skip($fp);
-                } else {
-                    // If Unicode
-                    if (preg_match('/^0x/i', $i)) {
-                        $i = hexdec(substr($i, 2));
-                    } else {
-                    // If octal
-                        if ($i{0} === '0' && $i !== '0' || substr($i, 0, 2) == '-0') {
-                            $i = octdec($i);
-                        }
-                    }
-
-                    $letter = $this->_char($fp);
-
-                    // Invalid character but main font is loaded and I can use it
-                    if ($letter === FALSE) {
-                        fclose($fp);
-                        return true;
-                    }
-
-                    $this->font[$i] = $letter;
-                }
-            }
-
-            fclose($fp);
-            return true;
-        } else {
-            return PEAR::raiseError('Cannot open font file', 2);
+        if (substr($header[0], 0, 5) <> 'flf2a') {
+            return PEAR::raiseError('Unknown FIGlet font format.', 4);
         }
+
+        @list ($this->hardblank, $this->height,,,
+        $this->oldlayout, $cmt_count, $this->rtol) = $header;
+
+        $this->hardblank = substr($this->hardblank, -1, 1);
+
+        for ($i = 0; $i < $cmt_count; $i++) {
+            fgets($fp, 2048);
+        }
+
+        // ASCII charcters
+        for ($i = 32; $i < 127; $i++) {
+            $this->font[$i] = $this->_char($fp);
+        }
+
+        foreach (array(91, 92, 93, 123, 124, 125, 126) as $i) {
+            if ($loadgerman) {
+                $letter = $this->_char($fp);
+
+                // Invalid character but main font is loaded and I can use it
+                if ($letter === false) {
+                    fclose($fp);
+                    return true;
+                }
+
+                // Load if it is not blank only
+                if (trim(implode('', $letter)) <> '')
+                $this->font[$i] = $letter;
+            } else {
+                $this->_skip($fp);
+            }
+        }
+
+        // Extented characters
+        for ($n = 0; !feof($fp); $n++) {
+            list ($i) = explode(' ', rtrim(fgets($fp, 1024)), 2);
+            if ($i == '') {
+                continue;
+            }
+
+            // If comment
+            if (preg_match('/^\-0x/i', $i)) {
+                $this->_skip($fp);
+            } else {
+                // If Unicode
+                if (preg_match('/^0x/i', $i)) {
+                    $i = hexdec(substr($i, 2));
+                } else {
+                // If octal
+                    if ($i{0} === '0' && $i !== '0' || substr($i, 0, 2) == '-0') {
+                        $i = octdec($i);
+                    }
+                }
+
+                $letter = $this->_char($fp);
+
+                // Invalid character but main font is loaded and I can use it
+                if ($letter === FALSE) {
+                    fclose($fp);
+                    return true;
+                }
+
+                $this->font[$i] = $letter;
+            }
+        }
+
+        fclose($fp);
+        return true;
     }
+
+
 
     /**
     * Print string using font loaded by LoadFont method
@@ -210,7 +231,6 @@ class Text_Figlet
     * @access public
     * @return string contains 
     */
-
     function lineEcho($str, $inhtml = false)
     {
         $out = array();
@@ -313,6 +333,8 @@ class Text_Figlet
         return $str;
     }
 
+
+
     /**
     * It is preg_replace callback function that makes horizontal letter smushing
     *
@@ -320,7 +342,6 @@ class Text_Figlet
     * @return string
     * @access private
     */
-
     function _rep($r)
     {
         if ($this->oldlayout & 1 && $r[1] == $r[2]) {
@@ -379,6 +400,7 @@ class Text_Figlet
     }
 
 
+
     /**
     * Function loads one character in the internal array from file
     *
@@ -386,7 +408,6 @@ class Text_Figlet
     * @return mixed lines of the character or false if foef occured
     * @access private
     */
-
     function _char(&$fp)
     {
         $out = array();
@@ -405,9 +426,11 @@ class Text_Figlet
 
             $out[] = $line;
         }
-                                                                            
+
         return $out;
     }
+
+
 
     /**
     * Function for skipping one character in a font file
@@ -416,7 +439,6 @@ class Text_Figlet
     * @return bool always return true
     * @access private
     */
-
     function _skip(&$fp)
     {
         for ($i = 0; $i<$this->height && !feof($fp); $i++) {

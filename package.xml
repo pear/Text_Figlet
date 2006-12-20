@@ -1,41 +1,116 @@
-<?xml version="1.0" encoding="ISO-8859-1" ?>
-<!DOCTYPE package SYSTEM "http://pear.php.net/dtd/package-1.0">
-<package version="1.0">
-  <name>Text_Figlet</name>
-  <summary>Render text using FIGlet fonts</summary>
-  <description>Engine for use FIGlet fonts to rendering text</description>
-  <maintainers>
-    <maintainer>
-      <user>bolk</user>
-      <name>Evgeny Stepanischev</name>
-      <email>se@timelabs.ru</email>
-      <role>lead</role>
-    </maintainer>
-  </maintainers>
+<?xml version="1.0" encoding="UTF-8"?>
+<package packagerversion="1.5.0RC1" version="2.0"
+ xmlns="http://pear.php.net/dtd/package-2.0"
+ xmlns:tasks="http://pear.php.net/dtd/tasks-1.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
+http://pear.php.net/dtd/tasks-1.0.xsd
+http://pear.php.net/dtd/package-2.0
+http://pear.php.net/dtd/package-2.0.xsd">
+ <name>Text_Figlet</name>
+ <channel>pear.php.net</channel>
+ <summary>Render text using FIGlet fonts</summary>
+ <description>Engine for use FIGlet fonts to rendering text
+ </description>
+ <lead>
+  <name>Evgeny Stepanischev</name>
+  <user>bolk</user>
+  <email>se@lixil.ru</email>
+  <active>yes</active>
+ </lead>
+ <date>2006-12-20</date>
+ <time>11:18:46</time>
+ <version>
+  <release>1.0.0</release>
+  <api>1.0.0</api>
+ </version>
+ <stability>
+  <release>stable</release>
+  <api>stable</api>
+ </stability>
+ <license uri="http://www.php.net/license">PHP License</license>
+
+ <notes>
+  - Marking as stable
+  - More meaningful error messages
+  - Fonts are loaded from data dir if they exist there
+  - Examples
+ </notes>
+
+ <contents>
+  <dir name="/">
+   <dir name="Text">
+    <file name="Figlet.php"         role="php" />
+   </dir>
+   <dir name="fonts">
+    <file name="3-d.flf"            role="data" />
+    <file name="alligator2.flf"     role="data" />
+    <file name="bell.flf"           role="data" />
+    <file name="block.flf"          role="data" />
+    <file name="contessa.flf"       role="data" />
+    <file name="cybermedium.flf"    role="data" />
+    <file name="isometric1.flf"     role="data" />
+    <file name="larry3d.flf"        role="data" />
+    <file name="script.flf"         role="data" />
+    <file name="slant.flf"          role="data" />
+   </dir>
+   <dir name="docs">
+    <file name="README.TXT"         role="doc" />
+   </dir>
+   <dir name="examples">
+    <file name="hello_world.php"    role="doc" />
+    <file name="listfonts.php"      role="doc" />
+   </dir>
+  </dir>
+ </contents>
+
+ <dependencies>
+  <required>
+   <php>
+    <min>4.0.4</min>
+   </php>
+   <pearinstaller>
+    <min>1.4.0b1</min>
+   </pearinstaller>
+  </required>
+ </dependencies>
+ <phprelease />
+
+ <changelog>
+
   <release>
-    <version>0.8.0</version>
-    <date>2004-05-10</date>
-    <license>PHP License</license>
-    <state>beta</state>
-    <notes>This is the first release.</notes>
-    <deps>
-      <dep type="php" rel="ge" version="4.0.4+"/>
-    </deps>
-    <provides type="class" name="Text_Figlet" />
-    <filelist>
-      <file role="doc" baseinstalldir="/Text" name="docs/README.TXT"/>
-      <file role="data" baseinstalldir="/Text" name="docs/examples/3-d.flf"/>
-      <file role="data" baseinstalldir="/Text" name="docs/examples/alligator2.flf"/>
-      <file role="data" baseinstalldir="/Text" name="docs/examples/bell.flf"/>
-      <file role="data" baseinstalldir="/Text" name="docs/examples/block.flf"/>
-      <file role="data" baseinstalldir="/Text" name="docs/examples/contessa.flf"/>
-      <file role="data" baseinstalldir="/Text" name="docs/examples/cybermedium.flf"/>
-      <file role="data" baseinstalldir="/Text" name="docs/examples/isometric1.flf"/>
-      <file role="data" baseinstalldir="/Text" name="docs/examples/larry3d.flf"/>
-      <file role="data" baseinstalldir="/Text" name="docs/examples/script.flf"/>
-      <file role="data" baseinstalldir="/Text" name="docs/examples/slant.flf"/>
-      <file role="doc" baseinstalldir="/Text" name="docs/examples/figlet.php"/>
-      <file role="php" baseinstalldir="/Text" name="Figlet.php"/>
-    </filelist>
+   <version>
+    <release>1.0.0</release>
+    <api>1.0.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2006-12-20</date>
+   <license uri="http://www.php.net/license">PHP License</license>
+   <notes>
+  - Marking as stable
+  - More meaningful error messages
+  - Fonts are loaded from data dir if they exist there
+  - Examples
+   </notes>
   </release>
+
+  <release>
+   <version>
+    <release>0.8.0</release>
+    <api>0.8.0</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>beta</api>
+   </stability>
+   <date>2004-05-10</date>
+   <license uri="http://www.php.net/license">PHP License</license>
+   <notes>
+    This is the first release.
+   </notes>
+  </release>
+ </changelog>
 </package>
