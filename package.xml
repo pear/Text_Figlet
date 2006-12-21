@@ -56,10 +56,10 @@ http://pear.php.net/dtd/package-2.0.xsd">
    </dir>
    <dir name="docs">
     <file name="README.TXT"         role="doc" />
-   </dir>
-   <dir name="examples">
-    <file name="hello_world.php"    role="doc" />
-    <file name="listfonts.php"      role="doc" />
+    <dir name="examples">
+     <file name="hello_world.php"    role="doc" />
+     <file name="listfonts.php"      role="doc" />
+    </dir>
    </dir>
   </dir>
  </contents>
