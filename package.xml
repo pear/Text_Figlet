@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<package packagerversion="1.5.0RC1" version="2.0"
+<package packagerversion="1.5.0" version="2.0"
  xmlns="http://pear.php.net/dtd/package-2.0"
  xmlns:tasks="http://pear.php.net/dtd/tasks-1.0"
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -18,10 +18,10 @@ http://pear.php.net/dtd/package-2.0.xsd">
   <email>se@lixil.ru</email>
   <active>yes</active>
  </lead>
- <date>2007-02-04</date>
- <time>14:47:46</time>
+ <date>2007-??-??</date>
+ <time></time>
  <version>
-  <release>1.0.0</release>
+  <release>1.0.1</release>
   <api>1.0.0</api>
  </version>
  <stability>
@@ -31,10 +31,6 @@ http://pear.php.net/dtd/package-2.0.xsd">
  <license uri="http://www.php.net/license">PHP License</license>
 
  <notes>
-  - Marking as stable
-  - More meaningful error messages
-  - Fonts are loaded from data dir if they exist there
-  - Examples
  </notes>
 
  <contents>
