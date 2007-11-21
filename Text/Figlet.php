@@ -1,27 +1,36 @@
 <?php
-
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4: */
-// +----------------------------------------------------------------------+
-// | PHP version 4                                                        |
-// +----------------------------------------------------------------------+
-// | Copyright (c) 1997-2002 The PHP Group                                |
-// +----------------------------------------------------------------------+
-// | This source file is subject to version 2.0 of the PHP license,       |
-// | that is bundled with this package in the file LICENSE, and is        |
-// | available at through the world-wide-web at                           |
-// | http://www.php.net/license/2_02.txt.                                 |
-// | If you did not receive a copy of the PHP license and are unable to   |
-// | obtain it through the world-wide-web, please send a note to          |
-// | license@php.net so we can mail you a copy immediately.               |
-// +----------------------------------------------------------------------+
-// | Authors: Evgeny Stepanischev <se@lixil.ru>                           |
-// +----------------------------------------------------------------------+
-// Project home page (Russian): http://bolk.exler.ru/files/figlet/
-//
-// $Id$
-
+/**
+* ASCII art text creation
+*
+* Project home page (Russian): http://bolk.exler.ru/files/figlet/
+*
+* PHP Version 4
+*
+* @category Text
+* @package  Text_Figlet
+* @author   Evgeny Stepanischev <se@lixil.ru>
+* @author   Christian Weiske <cweiske@php.net>
+* @license  http://www.php.net/license PHP License
+* @version  CVS: $Id$
+* @link     http://pear.php.net/package/Text_Figlet
+*/
 require_once 'PEAR.php';
 
+/**
+* ASCII art text creation
+*
+* Project home page (Russian): http://bolk.exler.ru/files/figlet/
+*
+* PHP Version 4
+*
+* @category Text
+* @package  Text_Figlet
+* @author   Evgeny Stepanischev <se@lixil.ru>
+* @author   Christian Weiske <cweiske@php.net>
+* @license  http://www.php.net/license PHP License
+* @link     http://pear.php.net/package/Text_Figlet
+*/
 class Text_Figlet
 {
     /**
@@ -85,8 +94,9 @@ class Text_Figlet
      * Automatically tries the Text_Figlet font data directory
      *  as long as no path separator is in the filename.
      *
-     * @param string $filename font file name
-     * @param bool $loadgerman (optional) load German character set or not
+     * @param string $filename   font file name
+     * @param bool   $loadgerman (optional) load German character set or not
+     *
      * @access public
      * @return mixed PEAR_Error or true for success
      */
@@ -136,14 +146,14 @@ class Text_Figlet
             flock($fp, LOCK_SH);
         }
 
-//            flf2a$ 6 5 20 15 3 0 143 229
-//              |  | | | |  |  | |  |   |
-//             /  /  | | |  |  | |  |   \
-//    Signature  /  /  | |  |  | |   \   Codetag_Count
-//      Hardblank  /  /  |  |  |  \   Full_Layout
-//           Height  /   |  |   \  Print_Direction
-//           Baseline   /    \   Comment_Lines
-//            Max_Length      Old_Layout
+        //            flf2a$ 6 5 20 15 3 0 143 229
+        //              |  | | | |  |  | |  |   |
+        //             /  /  | | |  |  | |  |   \
+        //    Signature  /  /  | |  |  | |   \   Codetag_Count
+        //      Hardblank  /  /  |  |  |  \   Full_Layout
+        //           Height  /   |  |   \  Print_Direction
+        //           Baseline   /    \   Comment_Lines
+        //            Max_Length      Old_Layout
 
 
         $header = explode(' ', fgets($fp, 2048));
@@ -199,7 +209,7 @@ class Text_Figlet
                 if (preg_match('/^0x/i', $i)) {
                     $i = hexdec(substr($i, 2));
                 } else {
-                // If octal
+                    // If octal
                     if ($i{0} === '0' && $i !== '0' || substr($i, 0, 2) == '-0') {
                         $i = octdec($i);
                     }
@@ -208,7 +218,7 @@ class Text_Figlet
                 $letter = $this->_char($fp);
 
                 // Invalid character but main font is loaded and I can use it
-                if ($letter === FALSE) {
+                if ($letter === false) {
                     fclose($fp);
                     return true;
                 }
@@ -226,10 +236,12 @@ class Text_Figlet
     /**
     * Print string using font loaded by LoadFont method
     *
-    * @param string $str string for printing
-    * @param bool $inhtml (optional) output mode - HTML (true) or plain text (false)
+    * @param string $str    string for printing
+    * @param bool   $inhtml (optional) output mode
+    *                       - HTML (true) or plain text (false)
+    *
     * @access public
-    * @return string contains 
+    * @return string contains
     */
     function lineEcho($str, $inhtml = false)
     {
@@ -258,14 +270,14 @@ class Text_Figlet
                 }
             }
 
-            for ($j = 0; $j<$this->height; $j++) {
+            for ($j = 0; $j < $this->height; $j++) {
                 $line = $this->font[$lt][$j];
 
                 // Replace hardblanks
                 if (isset($out[$j])) {
                     if ($this->rtol)
-                    $out[$j] = $line . $out[$j]; else
-                    $out[$j].= $line;
+                    $out[$j]  = $line . $out[$j]; else
+                    $out[$j] .= $line;
                 } else {
                     $out[$j] = $line;
                 }
@@ -276,7 +288,7 @@ class Text_Figlet
 
                 $mindiff = -1;
 
-                for ($j = 0; $j<$this->height; $j++) {
+                for ($j = 0; $j < $this->height; $j++) {
                     if (preg_match("/\S(\s*\\x00\s*)\S/", $out[$j], $r)) {
                         $mindiff = $mindiff == -1 ? strlen($r[1]) : min($mindiff, strlen($r[1]));
                     }
@@ -286,11 +298,15 @@ class Text_Figlet
                 // dec mindiff for exclude \x00 symbol
 
                 if (--$mindiff > 0) {
-                    for ($j = 0; $j<$this->height; $j++) {
+                    for ($j = 0; $j < $this->height; $j++) {
                         if (preg_match("/\\x00(\s{0,{$mindiff}})/", $out[$j], $r)) {
-                            $b = $mindiff - ($l = strlen($r[1]));
-                            $out[$j] = preg_replace("/\s{0,$b}\\x00\s{{$l}}/", "\0", $out[$j], 1);
-
+                            $b       = $mindiff - ($l = strlen($r[1]));
+                            $out[$j] = preg_replace(
+                                "/\s{0,$b}\\x00\s{{$l}}/",
+                                "\0",
+                                $out[$j],
+                                1
+                            );
                         }
                     }
                 }
@@ -298,10 +314,12 @@ class Text_Figlet
 
                 $this->smush_flag = 0;
 
-                for ($j = 0; $j<$this->height; $j++) {
-                    $out[$j] = 
-                    preg_replace_callback
-                    ("#([^$sp])\\x00([^$sp])#", array(&$this, '_rep'), $out[$j]);
+                for ($j = 0; $j < $this->height; $j++) {
+                    $out[$j] = preg_replace_callback(
+                        "#([^$sp])\\x00([^$sp])#",
+                        array(&$this, '_rep'),
+                        $out[$j]
+                    );
                 }
 
                 // Remove one space if smushing
@@ -322,7 +340,7 @@ class Text_Figlet
         }
 
         $trans = array("\0" => '', $this->hardblank => ' ');
-        $str = strtr(implode("\n", $out), $trans);
+        $str   = strtr(implode("\n", $out), $trans);
 
         if ($inhtml) {
             return '<nobr>'.
@@ -338,7 +356,8 @@ class Text_Figlet
     /**
     * It is preg_replace callback function that makes horizontal letter smushing
     *
-    * @param array $r
+    * @param array $r preg_replace matches array
+    *
     * @return string
     * @access private
     */
@@ -352,8 +371,8 @@ class Text_Figlet
         if ($this->oldlayout & 2) {
             $symb = '|/\\[]{}()<>';
 
-            if ($r[1] == '_' && strpos($symb, $r[2]) !== FALSE ||
-                $r[2] == '_' && strpos($symb, $r[1]) !== FALSE) {
+            if ($r[1] == '_' && strpos($symb, $r[2]) !== false ||
+                $r[2] == '_' && strpos($symb, $r[1]) !== false) {
                 $this->smush_flag = 1;
                 return $r[1];
             }
@@ -362,8 +381,8 @@ class Text_Figlet
         if ($this->oldlayout & 4) {
             $classes = '|/\\[]{}()<>';
 
-            if (($left = strpos($classes, $r[1])) !== FALSE) {
-                if (($right = strpos($classes, $r[2])) !== FALSE) {
+            if (($left = strpos($classes, $r[1])) !== false) {
+                if (($right = strpos($classes, $r[2])) !== false) {
                     $this->smush_flag = 1;
                     return $right > $left ? $r[2] : $r[1];
                 }
@@ -404,7 +423,8 @@ class Text_Figlet
     /**
     * Function loads one character in the internal array from file
     *
-    * @param resource $fp handle of font file
+    * @param resource &$fp handle of font file
+    *
     * @return mixed lines of the character or false if foef occured
     * @access private
     */
@@ -435,8 +455,9 @@ class Text_Figlet
     /**
     * Function for skipping one character in a font file
     *
-    * @param resource $fp handle of font file
-    * @return bool always return true
+    * @param resource &$fp handle of font file
+    *
+    * @return boolean always return true
     * @access private
     */
     function _skip(&$fp)
