@@ -105,19 +105,20 @@ class Text_Figlet
         $this->font = array();
         if (!file_exists($filename)) {
             //if it does not exist, try the Text_Figlet data directory
-            require_once 'PEAR/Config.php';
-            $fontdir = PEAR_Config::singleton()->get('data_dir')
-                 . '/Text_Figlet/fonts/';
+            include_once 'PEAR/Config.php';
+
+            $config  = PEAR_Config::singleton();
+            $fontdir = $config->get('data_dir') . '/Text_Figlet/fonts/';
+
             //only for filenames without path separators
             if (strpos($filename, '/') === false
                 && file_exists($fontdir . $filename)
             ) {
                 $filename = $fontdir . $filename;
             } else {
-                return PEAR::raiseError(
-                    'Figlet font file "' . $filename . '" cannot be found',
-                    1
-                );
+                return PEAR::raiseError('Figlet font file "' 
+                                        . $filename 
+                                        . '" cannot be found', 1);
             }
         }
 
@@ -127,11 +128,9 @@ class Text_Figlet
             $compressed = true;
 
             if (!function_exists('gzcompress')) {
-                return PEAR::raiseError(
-                    'Cannot load gzip compressed fonts since'
-                    . ' gzcompress() is not available.',
-                    3
-                );
+                return PEAR::raiseError('Cannot load gzip compressed fonts since'
+                                        . ' gzcompress() is not available.',
+                                        3);
             }
         } else {
             $compressed = false;
@@ -187,8 +186,9 @@ class Text_Figlet
                 }
 
                 // Load if it is not blank only
-                if (trim(implode('', $letter)) <> '')
-                $this->font[$i] = $letter;
+                if (trim(implode('', $letter)) <> '') {
+                    $this->font[$i] = $letter;
+                }
             } else {
                 $this->_skip($fp);
             }
@@ -275,9 +275,11 @@ class Text_Figlet
 
                 // Replace hardblanks
                 if (isset($out[$j])) {
-                    if ($this->rtol)
-                    $out[$j]  = $line . $out[$j]; else
-                    $out[$j] .= $line;
+                    if ($this->rtol) {
+                        $out[$j] = $line . $out[$j];
+                    } else {
+                        $out[$j] .= $line;
+                    }
                 } else {
                     $out[$j] = $line;
                 }
@@ -290,7 +292,11 @@ class Text_Figlet
 
                 for ($j = 0; $j < $this->height; $j++) {
                     if (preg_match("/\S(\s*\\x00\s*)\S/", $out[$j], $r)) {
-                        $mindiff = $mindiff == -1 ? strlen($r[1]) : min($mindiff, strlen($r[1]));
+                        if ($mindiff == -1) {
+                            $mindiff = strlen($r[1]);
+                        } else {
+                            $mindiff = min($mindiff, strlen($r[1]));
+                        }
                     }
                 }
 
@@ -300,13 +306,12 @@ class Text_Figlet
                 if (--$mindiff > 0) {
                     for ($j = 0; $j < $this->height; $j++) {
                         if (preg_match("/\\x00(\s{0,{$mindiff}})/", $out[$j], $r)) {
-                            $b       = $mindiff - ($l = strlen($r[1]));
-                            $out[$j] = preg_replace(
-                                "/\s{0,$b}\\x00\s{{$l}}/",
-                                "\0",
-                                $out[$j],
-                                1
-                            );
+                            $l       = strlen($r[1]);
+                            $b       = $mindiff - $l;
+                            $out[$j] = preg_replace("/\s{0,$b}\\x00\s{{$l}}/",
+                                                    "\0",
+                                                    $out[$j],
+                                                    1);
                         }
                     }
                 }
@@ -315,11 +320,9 @@ class Text_Figlet
                 $this->smush_flag = 0;
 
                 for ($j = 0; $j < $this->height; $j++) {
-                    $out[$j] = preg_replace_callback(
-                        "#([^$sp])\\x00([^$sp])#",
-                        array(&$this, '_rep'),
-                        $out[$j]
-                    );
+                    $out[$j] = preg_replace_callback("#([^$sp])\\x00([^$sp])#",
+                                                     array(&$this, '_rep'),
+                                                     $out[$j]);
                 }
 
                 // Remove one space if smushing
