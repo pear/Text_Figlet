@@ -1,0 +1,31 @@
+{
+    "authors": [
+        {
+            "email": "imbolk@gmail.com",
+            "name": "Evgeny Stepanischev",
+            "role": "Lead"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "Text": "./"
+        }
+    },
+    "description": "More info available on: http://pear.php.net/package/Text_Figlet",
+    "include-path": [
+        "./"
+    ],
+    "license": "PHP License",
+    "name": "pear/text_figlet",
+    "support": {
+        "issues": "http://pear.php.net/bugs/search.php?cmd=display&package_name[]=Text_Figlet",
+        "source": "https://github.com/pear/Text_Figlet"
+    },
+    "type": "library",
+    "require": {
+        "pear/pear_exception": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "*"
+    }
+}
